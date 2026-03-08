@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LifeGrid</title>
+    <link rel="stylesheet" href="styling.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <h1>LifeGrid</h1>
+        <div class="stats">
+          <span id="levelDisplay">Level 1 🔥</span>
+          <span id="xpDisplay">XP: 0</span>
+          <span id="streakDisplay">Streak: 0</span>
+        </div>
+      </header>
+
+      <div class="xp-bar">
+        <div class="xp-fill"></div>
+      </div>
+
+      <section class="contribution-section">
+        <h2>Yearly Life Consistency</h2>
+
+        <div class="compartment">
+          <h3>Work</h3>
+          <div class="heatmap" id="workHeatmap"></div>
+        </div>
+
+        <div class="compartment">
+          <h3>Health</h3>
+          <div class="heatmap" id="healthHeatmap"></div>
+        </div>
+
+        <div class="compartment">
+          <h3>Life</h3>
+          <div class="heatmap" id="lifeHeatmap"></div>
+        </div>
+      </section>
+
+      <section class="add-task">
+        <input type="text" id="taskInput" placeholder="Enter task..." />
+        <select id="category">
+          <option value="Work">Work</option>
+          <option value="Health">Health</option>
+          <option value="Life">Life</option>
+        </select>
+        <input type="date" id="dueDate" />
+        <button id="addBtn">Add</button>
+      </section>
+
+      <section class="task-section">
+        <h2>Today</h2>
+        <div id="todayTasks"></div>
+      </section>
+
+      <section class="task-section">
+        <h2>Upcoming</h2>
+        <div id="upcomingTasks"></div>
+      </section>
+
+      <section class="task-section">
+        <h2>Completed</h2>
+        <div id="completedTasks"></div>
+      </section>
+    </div>
+
+    <script src="scripting.js"></script>
+  </body>
+</html>
