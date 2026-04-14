@@ -2,6 +2,11 @@
 
 LifeGrid is a minimal productivity web app that tracks daily consistency using a GitHub-style heatmap.
 
+## 🚀 Live Demo
+
+Check it out here:  
+👉 https://gokulsaibanala.github.io/LifeGrid/
+
 ## Features
 
 - Task tracking
