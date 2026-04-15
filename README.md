@@ -32,7 +32,7 @@ A clean and minimal productivity web app that helps you track daily consistency 
 
 ## 📸 Preview
 
-![LifeGrid Preview](./screenshot.png)
+![LifeGrid Preview](./lifegrid.png)
 
 ---
 
