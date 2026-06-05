@@ -111,92 +111,89 @@ header h1 {
 }
 
 /* ==========================================================================
-   5. TASK ENGINE (ADD TASK INTERFACE)
+   5. HABIT ENGINE (INPUT INTERFACE)
    ========================================================================== */
 .add-task {
   display: flex;
-  gap: 12px;
-  margin: 30px 0;
+  gap: 10px;
+  margin: 20px 0;
 }
 
-.add-task input,
-.add-task select {
-  background: #1a1f2b;
-  border: 1px solid #252c3b;
-  color: #e6e6e6;
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 0.9rem;
-}
-
-.add-task input[type="text"] {
+.add-task input {
   flex: 1;
+  background: #161b22;
+  border: 1px solid #30363d;
+  color: #f0f6f7;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
 }
 
-.add-task input:focus,
-.add-task select:focus {
+.add-task input:focus {
   outline: none;
   border-color: #5b8cff;
 }
 
 .add-task button {
-  background: #5b8cff;
+  background: #238636; /* Clean green success button color */
   border: none;
-  padding: 10px 18px;
-  border-radius: 6px;
+  padding: 12px 20px;
+  border-radius: 8px;
   color: white;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
+  transition: opacity 0.2s ease, transform 0.1s ease;
 }
 
 .add-task button:hover {
-  background: #6f9dff;
+  opacity: 0.9;
   transform: translateY(-1px);
 }
 
 /* ==========================================================================
-   6. TASK CARDS & CONTAINER LISTS
+   6. HABIT CARDS & LISTS
    ========================================================================== */
 .task-section {
-  margin-bottom: 28px;
+  margin-top: 10px;
 }
 
 .task-section h2 {
-  font-size: 0.95rem;
-  margin-bottom: 12px;
+  font-size: 1rem;
+  margin-bottom: 16px;
   color: #aab2c0;
+  font-weight: 500;
 }
 
+/* The habit display card */
 .task {
-  background: #1a1f2b;
-  padding: 12px 14px;
-  border-radius: 8px;
-  margin-bottom: 8px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  padding: 14px 18px;
+  border-radius: 10px;
+  margin-bottom: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: background 0.2s ease, transform 0.1s ease;
+  transition: border-color 0.2s ease, transform 0.1s ease;
 }
 
 .task:hover {
-  background: #202636;
-  transform: translateY(-2px);
+  border-color: #444c56;
+  transform: translateY(-1px);
 }
 
-.task.work {
-  border-left: 3px solid #5b8cff;
+/* Styled text for the active habit */
+.task span {
+  font-size: 0.95rem;
+  color: #f0f6f7;
 }
 
-.task.health {
-  border-left: 3px solid #3ddc97;
-}
-
-.task.life {
-  border-left: 3px solid #8c7ae6;
-}
-
+/* Custom completed styling when checked off */
 .completed {
-  opacity: 0.55;
+  opacity: 0.4;
+}
+.completed span {
   text-decoration: line-through;
 }
 
