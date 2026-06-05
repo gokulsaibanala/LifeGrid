@@ -43,15 +43,16 @@
 
         <div class="task-management-panel">
           <section class="add-task">
-            <input type="text" id="taskInput" placeholder="Enter task..." />
-            <select id="category">
-              <option value="Work">Work</option>
-              <option value="Health">Health</option>
-              <option value="Life">Life</option>
-            </select>
-            <input type="date" id="dueDate" />
+            <input type="text" id="taskInput" placeholder="Create a new habit..." />
             <button id="addBtn">Add</button>
           </section>
+        
+          <section class="task-section">
+            <h2>Daily Focus</h2>
+            <div id="todayTasks">
+              </div>
+          </section>
+        </div>
 
           <section class="task-section">
             <h2>Today</h2>
