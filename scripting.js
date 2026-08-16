@@ -5,16 +5,14 @@ let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 let totalXP = parseInt(localStorage.getItem("totalXP")) || 0;
 
 const CATEGORY_COLORS = {
-  work: "#5b8cff",
-  health: "#3ddc97",
-  life: "#8c7ae6"
+  work: "#c98a3e",
+  health: "#d9614f",
+  life: "#8577b0"
 };
 
-const grids = {
-  work: document.getElementById("workHeatmap"),
-  health: document.getElementById("healthHeatmap"),
-  life: document.getElementById("lifeHeatmap")
-};
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+const dayCells = {}; // dateStr -> element
 
 document.getElementById("addBtn").addEventListener("click", addTask);
 document.getElementById("taskInput").addEventListener("keydown", (e) => {
@@ -25,35 +23,112 @@ document.getElementById("taskInput").addEventListener("keydown", (e) => {
    DATE HELPERS
    ========================================================================== */
 function todayStr() {
-  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  return new Date().toISOString().slice(0, 10);
 }
 
-function isLeapYear(year) {
-  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+function toISO(date) {
+  return date.toISOString().slice(0, 10);
 }
 
-function dayOfYear(dateStr) {
-  const d = new Date(dateStr + "T00:00:00");
-  const start = new Date(d.getFullYear(), 0, 0);
-  const diff = d - start;
-  return Math.floor(diff / 86400000); // 1-indexed
+function addDays(date, n) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n);
+  return d;
 }
 
 /* ==========================================================================
-   GRID SETUP
+   CALENDAR — single week-aligned grid, combined across categories
    ========================================================================== */
-function buildYearlyGrid(gridContainer, categoryName) {
+function buildCalendar() {
   const year = new Date().getFullYear();
-  const totalDays = isLeapYear(year) ? 366 : 365;
-  gridContainer.innerHTML = "";
-  for (let i = 1; i <= totalDays; i++) {
-    const box = document.createElement("div");
-    box.id = `${categoryName}-day-${i}`;
-    gridContainer.appendChild(box);
+  const grid = document.getElementById("calendarGrid");
+  const monthsRow = document.getElementById("calendarMonths");
+  grid.innerHTML = "";
+  monthsRow.innerHTML = "";
+
+  const jan1 = new Date(year, 0, 1);
+  const dec31 = new Date(year, 11, 31);
+  const gridStart = addDays(jan1, -jan1.getDay()); // Sunday on/before Jan 1
+  const gridEnd = addDays(dec31, 6 - dec31.getDay()); // Saturday on/after Dec 31
+
+  const totalCells = Math.round((gridEnd - gridStart) / 86400000) + 1;
+  const numCols = totalCells / 7;
+
+  grid.style.gridTemplateColumns = `repeat(${numCols}, 12px)`;
+  monthsRow.style.gridTemplateColumns = `repeat(${numCols}, 12px)`;
+
+  let lastMonth = -1;
+  let cursor = new Date(gridStart);
+
+  for (let i = 0; i < totalCells; i++) {
+    const col = Math.floor(i / 7) + 1;
+    const row = (i % 7) + 1;
+    const inYear = cursor.getFullYear() === year;
+    const dateStr = toISO(cursor);
+
+    const cell = document.createElement("div");
+    cell.className = "day-cell" + (inYear ? "" : " out-of-year");
+    cell.style.gridColumn = col;
+    cell.style.gridRow = row;
+
+    if (inYear) {
+      cell.dataset.date = dateStr;
+      dayCells[dateStr] = cell;
+
+      if (cursor.getDate() <= 7 && cursor.getMonth() !== lastMonth) {
+        lastMonth = cursor.getMonth();
+        const label = document.createElement("span");
+        label.textContent = MONTH_NAMES[lastMonth];
+        label.style.gridColumn = col;
+        monthsRow.appendChild(label);
+      }
+    }
+
+    grid.appendChild(cell);
+    cursor = addDays(cursor, 1);
   }
 }
 
-Object.keys(grids).forEach((cat) => buildYearlyGrid(grids[cat], cat));
+function computeDayCategoryMap(year) {
+  const map = {};
+  tasks.forEach((t) => {
+    t.completions.forEach((d) => {
+      if (!d.startsWith(String(year))) return;
+      if (!map[d]) map[d] = new Set();
+      map[d].add(t.category);
+    });
+  });
+  return map;
+}
+
+function paintCalendar() {
+  const year = new Date().getFullYear();
+  const dayMap = computeDayCategoryMap(year);
+
+  Object.entries(dayCells).forEach(([dateStr, cell]) => {
+    const cats = dayMap[dateStr] ? [...dayMap[dateStr]] : [];
+
+    if (cats.length === 0) {
+      cell.style.background = "#2a2015";
+      cell.style.boxShadow = "none";
+      cell.removeAttribute("title");
+    } else if (cats.length === 3) {
+      cell.style.background = "var(--gold)";
+      cell.style.boxShadow = "0 0 8px rgba(232,196,104,0.7)";
+      cell.title = `${dateStr}: a perfect day`;
+    } else if (cats.length === 2) {
+      const [c1, c2] = cats.map((c) => CATEGORY_COLORS[c]);
+      cell.style.background = `linear-gradient(135deg, ${c1} 50%, ${c2} 50%)`;
+      cell.style.boxShadow = `0 0 6px ${c1}66`;
+      cell.title = `${dateStr}: ${cats.join(" + ")}`;
+    } else {
+      const c = CATEGORY_COLORS[cats[0]];
+      cell.style.background = c;
+      cell.style.boxShadow = `0 0 6px ${c}88`;
+      cell.title = `${dateStr}: ${cats[0]}`;
+    }
+  });
+}
 
 /* ==========================================================================
    TASK MANAGEMENT
@@ -67,7 +142,7 @@ function addTask() {
     id: Date.now(),
     title,
     category,
-    completions: [] // list of "YYYY-MM-DD" strings, one per completed day
+    completions: []
   });
 
   saveTasks();
@@ -78,9 +153,7 @@ function addTask() {
 function completeTask(id) {
   const today = todayStr();
   const task = tasks.find((t) => t.id === id);
-  if (!task) return;
-
-  if (task.completions.includes(today)) return; // already logged today
+  if (!task || task.completions.includes(today)) return;
 
   task.completions.push(today);
   totalXP += 20;
@@ -103,24 +176,19 @@ function saveTasks() {
 /* ==========================================================================
    RENDERING
    ========================================================================== */
-function taskCard(task, { doneToday }) {
+function taskRow(task, { doneToday }) {
   const div = document.createElement("div");
-  div.className = "task";
-  if (doneToday) div.classList.add("completed");
+  div.className = "ledger-row";
 
   div.innerHTML = `
-    <span class="task-info">
-      <span class="task-tag" style="background:${CATEGORY_COLORS[task.category]}22; color:${CATEGORY_COLORS[task.category]}">${task.category}</span>
-      <span>${task.title}</span>
-      <span class="task-count">${task.completions.length} day${task.completions.length === 1 ? "" : "s"}</span>
-    </span>
-    <span class="task-actions">
-      ${doneToday
-        ? `<button disabled>Done ✓</button>`
-        : `<button onclick="completeTask(${task.id})">Done</button>`
-      }
-      <button class="delete-btn" onclick="deleteTask(${task.id})" title="Delete habit">✕</button>
-    </span>
+    <span class="task-dot" style="background:${CATEGORY_COLORS[task.category]}"></span>
+    <span class="task-title">${task.title}</span>
+    <span class="task-count">${task.completions.length}d</span>
+    ${doneToday
+      ? `<button class="stamp-btn" disabled>stamped</button>`
+      : `<button class="stamp-btn" onclick="completeTask(${task.id})">stamp</button>`
+    }
+    <button class="delete-btn" onclick="deleteTask(${task.id})" title="Delete habit">✕</button>
   `;
   return div;
 }
@@ -142,87 +210,55 @@ function renderTasks() {
   if (pending.length === 0) {
     todayContainer.innerHTML = `<p class="empty-state">Nothing pending — nice.</p>`;
   } else {
-    pending.forEach((t) => todayContainer.appendChild(taskCard(t, { doneToday: false })));
+    pending.forEach((t) => todayContainer.appendChild(taskRow(t, { doneToday: false })));
   }
 
   if (doneToday.length === 0) {
     completedContainer.innerHTML = `<p class="empty-state">Nothing logged today yet.</p>`;
   } else {
-    doneToday.forEach((t) => completedContainer.appendChild(taskCard(t, { doneToday: true })));
+    doneToday.forEach((t) => completedContainer.appendChild(taskRow(t, { doneToday: true })));
   }
 
   if (notStarted.length === 0) {
     upcomingContainer.innerHTML = `<p class="empty-state">No new habits waiting.</p>`;
   } else {
-    notStarted.forEach((t) => upcomingContainer.appendChild(taskCard(t, { doneToday: false })));
+    notStarted.forEach((t) => upcomingContainer.appendChild(taskRow(t, { doneToday: false })));
   }
 
-  updateGridVisuals();
+  paintCalendar();
   updateStreak();
-}
-
-function updateGridVisuals() {
-  const year = new Date().getFullYear();
-  const totalDays = isLeapYear(year) ? 366 : 365;
-
-  Object.keys(grids).forEach((cat) => {
-    for (let i = 1; i <= totalDays; i++) {
-      const el = document.getElementById(`${cat}-day-${i}`);
-      if (el) {
-        el.style.backgroundColor = "#21262d";
-        el.style.boxShadow = "none";
-        el.title = "";
-      }
-    }
-  });
-
-  tasks.forEach((task) => {
-    const color = CATEGORY_COLORS[task.category];
-    task.completions.forEach((dateStr) => {
-      if (!dateStr.startsWith(String(year))) return; // only show current year
-      const idx = dayOfYear(dateStr);
-      const box = document.getElementById(`${task.category}-day-${idx}`);
-      if (box) {
-        box.style.backgroundColor = color;
-        box.style.boxShadow = `0 0 6px ${color}99`;
-        box.title = box.title ? `${box.title}, ${task.title}` : `${dateStr}: ${task.title}`;
-      }
-    });
-  });
 }
 
 /* ==========================================================================
    XP / LEVEL / STREAK
    ========================================================================== */
 function updateXP() {
-  document.getElementById("xpDisplay").innerText = `XP: ${totalXP}`;
-  document.getElementById("levelDisplay").innerText = `Level ${Math.floor(totalXP / 120) + 1} 🔥`;
+  document.getElementById("xpDisplay").innerText = totalXP;
+  document.getElementById("levelDisplay").innerText = Math.floor(totalXP / 120) + 1;
   document.getElementById("xpFill").style.width = ((totalXP % 120) / 120) * 100 + "%";
 }
 
 function updateStreak() {
-  // Union of every date any task was completed on
   const allDates = new Set();
   tasks.forEach((t) => t.completions.forEach((d) => allDates.add(d)));
 
   let streak = 0;
   let cursor = new Date();
-  // If nothing done today yet, start checking from yesterday instead,
-  // so today not being logged yet doesn't zero out an ongoing streak.
   if (!allDates.has(todayStr())) {
-    cursor.setDate(cursor.getDate() - 1);
+    cursor = addDays(cursor, -1);
   }
 
-  while (allDates.has(cursor.toISOString().slice(0, 10))) {
+  while (allDates.has(toISO(cursor))) {
     streak++;
-    cursor.setDate(cursor.getDate() - 1);
+    cursor = addDays(cursor, -1);
   }
 
-  document.getElementById("streakDisplay").innerText = `Streak: ${streak}`;
+  document.getElementById("streakDisplay").innerText = `${streak} 🔥`;
 }
 
 /* ==========================================================================
    INIT
    ========================================================================== */
+buildCalendar();
 updateXP();
 renderTasks();
