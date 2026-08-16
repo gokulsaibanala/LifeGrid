@@ -130,9 +130,20 @@ header h1 {
   transition: border-color 0.2s ease;
 }
 
-.add-task input:focus {
+.add-task input:focus,
+.add-task select:focus {
   outline: none;
   border-color: #5b8cff;
+}
+
+.add-task select {
+  background: #161b22;
+  border: 1px solid #30363d;
+  color: #f0f6f7;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
 }
 
 .add-task button {
@@ -156,6 +167,7 @@ header h1 {
    ========================================================================== */
 .task-section {
   margin-top: 10px;
+  margin-bottom: 26px;
 }
 
 .task-section h2 {
@@ -176,11 +188,19 @@ header h1 {
   justify-content: space-between;
   align-items: center;
   transition: border-color 0.2s ease, transform 0.1s ease;
+  gap: 12px;
 }
 
 .task:hover {
   border-color: #444c56;
   transform: translateY(-1px);
+}
+
+.task-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 /* Styled text for the active habit */
@@ -189,12 +209,67 @@ header h1 {
   color: #f0f6f7;
 }
 
-/* Custom completed styling when checked off */
-.completed {
-  opacity: 0.4;
+.task-tag {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-weight: 600;
 }
-.completed span {
-  text-decoration: line-through;
+
+.task-count {
+  font-size: 0.8rem;
+  color: #6e7681;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.task-actions button {
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #f0f6f7;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.task-actions button:hover:not(:disabled) {
+  border-color: #5b8cff;
+}
+
+.task-actions button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.delete-btn {
+  background: transparent !important;
+  border: none !important;
+  color: #6e7681;
+  font-size: 0.9rem;
+  padding: 4px 6px !important;
+}
+
+.delete-btn:hover {
+  color: #f85149;
+}
+
+/* Custom completed styling when checked off for today */
+.completed {
+  opacity: 0.7;
+}
+
+.empty-state {
+  color: #6e7681;
+  font-size: 0.9rem;
+  padding: 8px 2px;
 }
 
 /* ==========================================================================
@@ -225,5 +300,15 @@ header h1 {
   .add-task button {
     width: 100%;
     padding: 12px;
+  }
+
+  .task {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .task-actions {
+    width: 100%;
+    justify-content: flex-end;
   }
 }
