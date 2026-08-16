@@ -18,23 +18,20 @@
       </header>
 
       <div class="xp-bar">
-        <div class="xp-fill"></div>
+        <div class="xp-fill" id="xpFill"></div>
       </div>
 
       <div class="main-dashboard">
         <section class="contribution-section">
           <h2>Yearly Life Consistency</h2>
-
           <div class="compartment">
             <h3>Work</h3>
             <div class="heatmap" id="workHeatmap"></div>
           </div>
-
           <div class="compartment">
             <h3>Health</h3>
             <div class="heatmap" id="healthHeatmap"></div>
           </div>
-
           <div class="compartment">
             <h3>Life</h3>
             <div class="heatmap" id="lifeHeatmap"></div>
@@ -44,15 +41,13 @@
         <div class="task-management-panel">
           <section class="add-task">
             <input type="text" id="taskInput" placeholder="Create a new habit..." />
+            <select id="categorySelect">
+              <option value="work">Work</option>
+              <option value="health">Health</option>
+              <option value="life">Life</option>
+            </select>
             <button id="addBtn">Add</button>
           </section>
-        
-          <section class="task-section">
-            <h2>Daily Focus</h2>
-            <div id="todayTasks">
-              </div>
-          </section>
-        </div>
 
           <section class="task-section">
             <h2>Today</h2>
@@ -60,18 +55,17 @@
           </section>
 
           <section class="task-section">
-            <h2>Upcoming</h2>
-            <div id="upcomingTasks"></div>
+            <h2>Completed Today</h2>
+            <div id="completedTasks"></div>
           </section>
 
           <section class="task-section">
-            <h2>Completed</h2>
-            <div id="completedTasks"></div>
+            <h2>Not Started Yet</h2>
+            <div id="upcomingTasks"></div>
           </section>
         </div>
       </div>
     </div>
-
     <script src="scripting.js"></script>
   </body>
 </html>
