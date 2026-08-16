@@ -4,67 +4,85 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LifeGrid</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styling.css" />
   </head>
   <body>
     <div class="app">
       <header>
-        <h1>LifeGrid</h1>
-        <div class="stats">
-          <span id="levelDisplay">Level 1 🔥</span>
-          <span id="xpDisplay">XP: 0</span>
-          <span id="streakDisplay">Streak: 0</span>
+        <div class="brand">
+          <h1>LifeGrid</h1>
+          <p class="tagline">a ledger of the days you showed up</p>
+        </div>
+        <div class="stat-tiles">
+          <div class="stat-tile">
+            <span class="stat-label">Level</span>
+            <span class="stat-value" id="levelDisplay">1</span>
+          </div>
+          <div class="stat-tile">
+            <span class="stat-label">XP</span>
+            <span class="stat-value" id="xpDisplay">0</span>
+            <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+          </div>
+          <div class="stat-tile">
+            <span class="stat-label">Streak</span>
+            <span class="stat-value flame" id="streakDisplay">0 🔥</span>
+          </div>
         </div>
       </header>
 
-      <div class="xp-bar">
-        <div class="xp-fill" id="xpFill"></div>
-      </div>
-
-      <div class="main-dashboard">
-        <section class="contribution-section">
-          <h2>Yearly Life Consistency</h2>
-          <div class="compartment">
-            <h3>Work</h3>
-            <div class="heatmap" id="workHeatmap"></div>
+      <section class="calendar-section">
+        <div class="calendar-wrap" id="calendarWrap">
+          <div class="calendar-inner">
+            <div class="calendar-months" id="calendarMonths"></div>
+            <div class="calendar-body">
+              <div class="calendar-daylabels">
+                <span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span>
+              </div>
+              <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
           </div>
-          <div class="compartment">
-            <h3>Health</h3>
-            <div class="heatmap" id="healthHeatmap"></div>
-          </div>
-          <div class="compartment">
-            <h3>Life</h3>
-            <div class="heatmap" id="lifeHeatmap"></div>
-          </div>
-        </section>
-
-        <div class="task-management-panel">
-          <section class="add-task">
-            <input type="text" id="taskInput" placeholder="Create a new habit..." />
-            <select id="categorySelect">
-              <option value="work">Work</option>
-              <option value="health">Health</option>
-              <option value="life">Life</option>
-            </select>
-            <button id="addBtn">Add</button>
-          </section>
-
-          <section class="task-section">
-            <h2>Today</h2>
-            <div id="todayTasks"></div>
-          </section>
-
-          <section class="task-section">
-            <h2>Completed Today</h2>
-            <div id="completedTasks"></div>
-          </section>
-
-          <section class="task-section">
-            <h2>Not Started Yet</h2>
-            <div id="upcomingTasks"></div>
-          </section>
         </div>
-      </div>
+        <div class="legend">
+          <span class="legend-item"><i style="background:var(--amber)"></i>Work</span>
+          <span class="legend-item"><i style="background:var(--coral)"></i>Health</span>
+          <span class="legend-item"><i style="background:var(--violet)"></i>Life</span>
+          <span class="legend-item"><i style="background:var(--gold)"></i>All three — a perfect day</span>
+        </div>
+      </section>
+
+      <section class="ledger">
+        <div class="ledger-row entry-row">
+          <span class="line-no">＋</span>
+          <input type="text" id="taskInput" placeholder="New entry…" />
+          <select id="categorySelect">
+            <option value="work">Work</option>
+            <option value="health">Health</option>
+            <option value="life">Life</option>
+          </select>
+          <button id="addBtn">Add</button>
+        </div>
+
+        <div class="ledger-group">
+          <h2>Today</h2>
+          <div id="todayTasks"></div>
+        </div>
+
+        <div class="ledger-group">
+          <h2>Completed today</h2>
+          <div id="completedTasks"></div>
+        </div>
+
+        <div class="ledger-group">
+          <h2>Not started yet</h2>
+          <div id="upcomingTasks"></div>
+        </div>
+      </section>
     </div>
     <script src="scripting.js"></script>
   </body>
